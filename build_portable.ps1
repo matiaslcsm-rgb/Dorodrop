@@ -69,6 +69,7 @@ $bat = (Get-Content (Join-Path $root "portable\Abrir Doro Drop.bat") -Raw) -repl
 [IO.File]::WriteAllText((Join-Path $out "Abrir Doro Drop.bat"), $bat, [Text.Encoding]::ASCII)
 $leeme = (Get-Content (Join-Path $root "portable\LEEME.txt") -Raw -Encoding utf8) -replace "`r?`n", "`r`n"
 [IO.File]::WriteAllText((Join-Path $out "LEEME.txt"), $leeme, (New-Object Text.UTF8Encoding $true))
+Copy-Item (Join-Path $root "LICENSE") (Join-Path $out "LICENSE.txt")
 
 # 6. Zip
 Write-Host "Comprimiendo..."
