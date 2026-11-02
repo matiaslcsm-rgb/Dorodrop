@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Doro Drop</title>
+<link rel="icon" type="image/x-icon" href="assets/icon.ico" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="site-header">
+  <nav class="topnav">
+    <span class="topnav-logo">Doro Drop</span>
+    <div class="topnav-links">
+      <button class="tab-btn active" data-tab="download">Descargar</button>
+      <button class="tab-btn" data-tab="pdf">PDF</button>
+      <button class="tab-btn" data-tab="image">Imágenes</button>
+      <button class="tab-btn" data-tab="media">Audio/Video</button>
+      <button class="tab-btn" data-tab="notes">Notas</button>
+      <button class="tab-btn" data-tab="editor">Editor</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <div class="hero-title">DORO<br />DROP</div>
+    <p class="subtitle">Utility App</p>
+    <p class="hero-desc">
+      Descargá videos, convertí y editá archivos — todo corre acá, en esta
+      máquina, sin subir nada a internet.
+    </p>
+  </div>
+</header>
+
+<main>
+  <!-- Descargar -->
+  <section id="download" class="tab-panel active">
+    <h2>Descargar</h2>
+    <p class="hint">Videos y fotos de YouTube, Instagram, Facebook, TikTok y más. Pegá un link, o varios (uno por línea) para bajarlos en cola.</p>
+    <form id="download-search-form">
+      <textarea id="download-url" class="url-box" rows="1" placeholder="https://..." required></textarea>
+      <button type="button" id="download-search-btn">Buscar</button>
+    </form>
+    <div id="download-search-status" class="status"></div>
+
+    <div class="tool-card preview-card" id="download-batch" hidden>
+      <h3>Cola de descargas</h3>
+      <ol id="download-batch-list" class="batch-list"></ol>
+      <form>
+        <select id="download-batch-quality">
+          <option value="best">Mejor calidad</option>
+          <option value="1080">1080p</option>
+          <option value="720">720p</option>
+          <option value="480">480p</option>
+          <option value="360">360p</option>
+          <option value="audio">Solo audio (MP3)</option>
+        </select>
+        <button type="button" id="download-batch-btn">Descargar todo</button>
+        <button type="button" id="download-batch-cancel-btn" class="btn-cancel" hidden>Cancelar</button>
+      </form>
+      <div id="download-batch-status" class="status"></div>
+    </div>
+
+    <div class="tool-card preview-card" id="download-preview" hidden>
+      <div class="preview-row">
+        <img id="download-thumb" class="preview-thumb" alt="Miniatura del video" hidden />
+        <div class="preview-info">
+          <div id="download-title" class="preview-title"></div>
+          <div id="download-meta" class="hint"></div>
+        </div>
+      </div>
+      <form id="download-confirm-form">
+        <select id="download-quality">
+          <option value="best">Mejor calidad</option>
+          <option value="1080">1080p</option>
+          <option value="720">720p</option>
+          <option value="480">480p</option>
+          <option value="360">360p</option>
+          <option value="audio">Solo audio (MP3)</option>
+        </select>
+        <button type="button" id="download-confirm-btn">Confirmar descarga</button>
+        <button type="button" id="download-cancel-btn" class="btn-cancel" hidden>Cancelar</button>
+      </form>
+      <div class="progress-wrap" id="download-progress-wrap" hidden>
+        <div class="progress-bar" id="download-progress-bar"></div>
+      </div>
+      <div id="download-status" class="status"></div>
+    </div>
+
+    <div class="tool-card" id="download-history-card" hidden>
+      <h3>Historial</h3>
+      <p class="hint">Tocá un link para volver a buscarlo. Se guarda solo en este navegador.</p>
+      <ul id="download-history" class="history-list"></ul>
+      <button type="button" id="download-history-clear" class="btn-cancel">Borrar historial</button>
+    </div>
+
+    <details class="tool-card settings-card">
+      <summary>Sesión de redes (solo para posts privados)</summary>
+      <p id="cookies-status" class="hint"></p>
+      <p class="hint">
+        No hace falta para posts públicos. Solo si un link te dice que pide
+        iniciar sesión (cuentas privadas, contenido restringido):
+      </p>
+      <ol class="hint steps">
+        <li>En Chrome, instalá la extensión <strong>Get cookies.txt LOCALLY</strong>.</li>
+        <li>Entrá a la red (por ejemplo instagram.com) con tu cuenta iniciada.</li>
+        <li>Abrí la extensión, tocá <strong>Export</strong> y subí acá el archivo.</li>
+      </ol>
+      <p class="hint">Solo se guardan las cookies de redes sociales; el resto se descarta. Quedan en esta PC.</p>
+      <form>
+        <input type="file" id="cookies-file" accept=".txt,text/plain" />
+        <button type="button" id="cookies-upload-btn">Cargar</button>
+        <button type="button" id="cookies-delete-btn" class="btn-cancel">Borrar sesión</button>
+      </form>
+      <div id="cookies-msg" class="status"></div>
+    </details>
+
+    <details class="tool-card settings-card">
+      <summary>Actualizaciones</summary>
+      <p class="hint">
+        Las redes cambian seguido, así que Doro Drop actualiza solo sus
+        descargadores una vez por día. Solo instala versiones oficiales
+        publicadas hace al menos <span id="updater-min-age">3</span> días,
+        las prueba, y si alguna falla vuelve a la anterior.
+      </p>
+      <label class="toggle-row">
+        <input type="checkbox" id="updater-auto" checked /> Actualizar automáticamente
+      </label>
+      <p id="updater-versions" class="hint"></p>
+      <p id="updater-last" class="hint"></p>
+      <p class="hint">
+        Si algo dejó de bajar y no querés esperar, actualizá a la última
+        versión ahora:
+      </p>
+      <form>
+        <button type="button" id="updater-btn">Actualizar ahora</button>
+      </form>
+      <div id="updater-status" class="status"></div>
+    </details>
+  </section>
+
+  <!-- PDF -->
+  <section id="pdf" class="tab-panel">
+    <h2>Herramientas PDF</h2>
+
+    <div class="tool-card">
+      <h3>Unir PDFs</h3>
+      <form id="pdf-merge-form">
+        <input type="file" id="pdf-merge-files" accept="application/pdf" multiple required />
+        <button type="submit">Unir</button>
+      </form>
+    </div>
+
+    <div class="tool-card">
+      <h3>Dividir PDF en páginas</h3>
+      <form id="pdf-split-form">
+        <input type="file" id="pdf-split-file" accept="application/pdf" required />
+        <button type="submit">Dividir</button>
+      </form>
+    </div>
+
+    <div class="tool-card">
+      <h3>Imágenes a PDF</h3>
+      <form id="pdf-img2pdf-form">
+        <input type="file" id="pdf-img2pdf-files" accept="image/*" multiple required />
+        <button type="submit">Convertir</button>
+      </form>
+    </div>
+
+    <div id="pdf-status" class="status"></div>
+  </section>
+
+  <!-- Imágenes -->
+  <section id="image" class="tab-panel">
+    <h2>Conversor de imágenes</h2>
+
+    <div class="tool-card">
+      <h3>Convertir formato</h3>
+      <form id="image-form">
+        <input type="file" id="image-file" accept="image/*" required />
+        <select id="image-format">
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+          <option value="webp">WEBP</option>
+          <option value="bmp">BMP</option>
+          <option value="gif">GIF</option>
+          <option value="tiff">TIFF</option>
+        </select>
+        <input type="number" id="image-maxwidth" placeholder="Ancho máx. (opcional)" min="1" />
+        <button type="submit">Convertir</button>
+      </form>
+    </div>
+
+    <div class="tool-card">
+      <h3>RAW a JPG</h3>
+      <p class="hint">CR2, CR3, NEF, ARW, DNG, RW2, ORF, RAF, PEF, SRW. Podés subir varias a la vez.</p>
+      <form id="raw2jpg-form">
+        <input type="file" id="raw2jpg-files" accept=".cr2,.cr3,.nef,.arw,.dng,.rw2,.orf,.raf,.pef,.srw" multiple required />
+        <button type="submit">Convertir</button>
+      </form>
+    </div>
+
+    <div id="image-status" class="status"></div>
+  </section>
+
+  <!-- Audio / Video -->
+  <section id="media" class="tab-panel">
+    <h2>Conversor de audio / video</h2>
+    <p class="hint">Requiere <code>ffmpeg</code> instalado en el servidor.</p>
+    <form id="media-form">
+      <input type="file" id="media-file" required />
+      <select id="media-format">
+        <optgroup label="Video">
+          <option value="mp4">MP4</option>
+          <option value="webm">WEBM</option>
+          <option value="mkv">MKV</option>
+          <option value="avi">AVI</option>
+          <option value="mov">MOV</option>
+        </optgroup>
+        <optgroup label="Audio">
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+          <option value="ogg">OGG</option>
+          <option value="aac">AAC</option>
+          <option value="flac">FLAC</option>
+        </optgroup>
+      </select>
+      <button type="submit">Convertir</button>
+    </form>
+    <div id="media-status" class="status"></div>
+  </section>
+
+  <!-- Notas -->
+  <section id="notes" class="tab-panel">
+    <h2>Notas y feedback</h2>
+    <p class="hint">Dejá comentarios, ideas o problemas para el equipo. Se guardan localmente en este servidor.</p>
+
+    <div class="tool-card">
+      <form id="note-form">
+        <input type="text" id="note-author" placeholder="Tu nombre (opcional)" maxlength="60" />
+        <textarea id="note-text" placeholder="Escribí tu comentario..." maxlength="2000" required></textarea>
+        <button type="submit">Publicar</button>
+      </form>
+      <div id="note-status" class="status"></div>
+    </div>
+
+    <div id="notes-list"></div>
+  </section>
+
+  <!-- Editor -->
+  <section id="editor" class="tab-panel">
+    <h2>Editor</h2>
+    <p class="hint">Exposición, contraste, saturación y balance de blancos. Funciona con JPG/PNG y con RAW de cámara. Subí varias fotos para editarlas en lote.</p>
+
+    <div class="tool-card">
+      <input type="file" id="editor-file" accept="image/*,.cr2,.cr3,.nef,.arw,.dng,.rw2,.orf,.raf,.pef,.srw" multiple />
+      <div id="editor-status" class="status"></div>
+
+      <div id="editor-workspace" hidden>
+        <div id="editor-file-list" class="editor-file-list"></div>
+
+        <canvas id="editor-canvas" class="editor-canvas"></canvas>
+
+        <div class="preset-row">
+          <select id="editor-preset-select">
+            <option value="">— Perfil guardado —</option>
+          </select>
+          <button type="button" id="editor-preset-load-btn">Cargar</button>
+          <button type="button" id="editor-preset-save-btn">Guardar como perfil</button>
+          <button type="button" id="editor-preset-delete-btn" class="btn-cancel">Eliminar</button>
+        </div>
+
+        <div class="slider-row">
+          <label for="editor-exposure">Exposición <span id="editor-exposure-val">0</span></label>
+          <input type="range" id="editor-exposure" min="-100" max="100" value="0" />
+        </div>
+        <div class="slider-row">
+          <label for="editor-contrast">Contraste <span id="editor-contrast-val">0</span></label>
+          <input type="range" id="editor-contrast" min="-100" max="100" value="0" />
+        </div>
+        <div class="slider-row">
+          <label for="editor-saturation">Saturación <span id="editor-saturation-val">0</span></label>
+          <input type="range" id="editor-saturation" min="-100" max="100" value="0" />
+        </div>
+        <div class="slider-row">
+          <label for="editor-temperature">Temperatura <span id="editor-temperature-val">0</span></label>
+          <input type="range" id="editor-temperature" min="-100" max="100" value="0" />
+        </div>
+        <div class="slider-row">
+          <label for="editor-tint">Tinte <span id="editor-tint-val">0</span></label>
+          <input type="range" id="editor-tint" min="-100" max="100" value="0" />
+        </div>
+
+        <div class="editor-actions">
+          <select id="editor-format">
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+          </select>
+          <label class="editor-apply-choice">
+            <input type="radio" name="editor-apply-scope" value="all" checked /> Todas las fotos
+          </label>
+          <label class="editor-apply-choice">
+            <input type="radio" name="editor-apply-scope" value="selected" /> Solo seleccionadas
+          </label>
+          <button type="button" id="editor-reset-btn" class="btn-cancel">Reiniciar</button>
+          <button type="button" id="editor-download-btn">Aplicar y descargar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

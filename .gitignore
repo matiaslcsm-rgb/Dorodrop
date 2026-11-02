@@ -1,0 +1,18 @@
+backend/venv/
+__pycache__/
+*.pyc
+dist/
+
+# datos de cada PC: sesiones, ajustes, notas, descargas
+data/*
+!data/downloads/
+!data/tmp/
+data/downloads/*
+data/tmp/*
+!data/downloads/.gitkeep
+!data/tmp/.gitkeep
+
+# medios sueltos de pruebas
+*.mp4
+*.webm
+*.mp3

@@ -1,0 +1,48 @@
+DORO DROP
+=========
+
+Descargá videos y fotos de YouTube, Instagram, Facebook, TikTok y más,
+y convertí o editá PDFs, imágenes, audio y video. Todo corre en tu PC:
+no se sube nada a internet.
+
+
+CÓMO SE USA
+-----------
+1. Descomprimí la carpeta "DoroDrop" donde quieras (por ejemplo en
+   Documentos). No la abras desde adentro del .zip: tiene que estar
+   descomprimida.
+2. Doble clic en "Abrir Doro Drop.bat".
+   Se abre el navegador con la app. Puede tardar unos segundos la
+   primera vez.
+3. Para apagarla, cerrá la ventana minimizada que dice
+   "Doro Drop - servidor" en la barra de tareas.
+
+No hace falta instalar nada: Python, ffmpeg y todo lo demás ya vienen
+adentro de la carpeta.
+
+Si Windows muestra "Windows protegió su PC", tocá "Más información" y
+después "Ejecutar de todas formas".
+
+
+INSTAGRAM
+---------
+Los posts públicos (fotos, carruseles, reels) se bajan sin iniciar
+sesión. Si Instagram rechaza un link, esperá unos minutos y probá de
+nuevo. Solo para cuentas privadas: en la sección Descargar, abajo de
+todo, abrí "Sesión de redes" y seguí los pasos. Tu sesión queda
+guardada solo en esta PC (carpeta data).
+
+
+ACTUALIZACIONES
+---------------
+Doro Drop actualiza solo sus descargadores una vez por día (las redes
+cambian seguido). Solo instala versiones oficiales con al menos 3 días
+de publicadas, las prueba, y si alguna falla vuelve a la anterior.
+Se puede apagar en "Actualizaciones", abajo de todo en Descargar.
+
+Si algo dejó de bajar y no querés esperar: "Actualizaciones" >
+"Actualizar ahora".
+
+
+Usalo para contenido propio o con permiso: descargar contenido ajeno
+puede ir contra los términos de uso de cada red.
