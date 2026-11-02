@@ -26,7 +26,7 @@ BASE = BACKEND.parent
 DATA = BASE / "data"
 LOG_FILE = DATA / "launcher.log"
 PREFERRED_PORT = 8010
-HEARTBEAT_TIMEOUT = 180  # minimizado, el navegador avisa como mucho una vez por minuto
+GRACE_SECONDS = 6
 
 
 def _hide_child_consoles() -> None:
@@ -134,14 +134,22 @@ def main() -> None:
             traceback.print_exc()
 
     url = f"http://localhost:{port}"
-    window = _open_window(url)
-    options.last_ping = time.time()
+    _open_window(url)
+    opened_at = time.time()
 
+    # nos apagamos cuando no queda ninguna ventana abierta: las páginas avisan
+    # que siguen ahí y se despiden al cerrarse (ver routers/options.py)
     while True:
         time.sleep(2)
-        window_closed = window is not None and window.poll() is not None
-        no_heartbeat = time.time() - options.last_ping > HEARTBEAT_TIMEOUT
-        if (window_closed or no_heartbeat) and not downloader.has_active_jobs():
+        if downloader.has_active_jobs() or options.open_pages() > 0:
+            continue
+        if not options.ever_connected:
+            # la ventana todavía no cargó; si en 2 minutos no aparece, cerramos
+            if time.time() - opened_at > 120:
+                break
+            continue
+        # unos segundos de margen: al recargar la página se despide y vuelve
+        if time.time() - options.last_change > GRACE_SECONDS:
             break
 
     print("ventana cerrada, apagando")

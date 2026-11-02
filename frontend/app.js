@@ -1372,8 +1372,24 @@ document.getElementById("opt-shortcut").addEventListener("click", async () => {
 
 loadOptions();
 
-// la ventana avisa que sigue abierta (el lanzador lo usa para apagarse solo
-// si no pudo abrir la ventana de Edge)
-setInterval(() => {
-  nativeFetch("/api/options/ping", { method: "POST" }).catch(() => {});
-}, 15000);
+// la ventana avisa que sigue abierta y se despide al cerrarse: el lanzador
+// apaga el servidor cuando no queda ninguna ventana de Doro Drop
+const PAGE_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+const pageBody = () => JSON.stringify({ page: PAGE_ID });
+
+function sendPing() {
+  nativeFetch("/api/options/ping", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: pageBody(),
+  }).catch(() => {});
+}
+
+sendPing();
+setInterval(sendPing, 10000);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") sendPing();
+});
+window.addEventListener("pagehide", () => {
+  navigator.sendBeacon("/api/options/bye", new Blob([pageBody()], { type: "application/json" }));
+});

@@ -9,9 +9,19 @@ from ..delivery import is_local
 
 router = APIRouter(prefix="/api/options", tags=["options"])
 
-# la ventana de la app avisa cada tanto que sigue abierta; el lanzador apaga
-# el servidor si deja de recibir avisos (por si no se pudo usar Edge)
-last_ping = time.time()
+# Cada ventana/pestaña abierta avisa cada tanto que sigue ahí (ping) y se
+# despide al cerrarse (bye). El lanzador usa esto para apagar el servidor
+# cuando ya no queda ninguna abierta. No alcanza con mirar el proceso de
+# Edge: a veces le pasa la ventana a otro proceso de Edge y termina enseguida.
+PAGE_TIMEOUT = 180  # minimizada, la página avisa como mucho una vez por minuto
+_pages: dict[str, float] = {}
+last_change = time.time()
+ever_connected = False
+
+
+def open_pages() -> int:
+    now = time.time()
+    return sum(1 for seen in _pages.values() if now - seen < PAGE_TIMEOUT)
 
 
 def _public(request: Request) -> dict:
@@ -105,8 +115,23 @@ def create_shortcut(request: Request):
     return {"ok": True, "path": str(path)}
 
 
+class PageIn(BaseModel):
+    page: str
+
+
 @router.post("/ping")
-def ping():
-    global last_ping
-    last_ping = time.time()
+def ping(payload: PageIn):
+    global last_change, ever_connected
+    if payload.page not in _pages:
+        last_change = time.time()
+    _pages[payload.page] = time.time()
+    ever_connected = True
+    return {"ok": True}
+
+
+@router.post("/bye")
+def bye(payload: PageIn):
+    global last_change
+    _pages.pop(payload.page, None)
+    last_change = time.time()
     return {"ok": True}
