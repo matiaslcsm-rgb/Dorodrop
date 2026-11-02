@@ -529,3 +529,193 @@ textarea.url-box {
 }
 
 .toggle-row input { accent-color: var(--green); width: 1.1rem; height: 1.1rem; }
+
+/* --- Pulido: encabezado compacto, ayuda, opciones, aviso de guardado --- */
+.hero { padding: 1.4rem 1.25rem 1.6rem; }
+.hero-title {
+  font-size: clamp(2.4rem, 9vw, 4rem);
+  line-height: 0.9;
+}
+.hero-desc { margin-top: 0.7rem; font-size: 0.85rem; }
+
+main { padding-top: 1.6rem; }
+.tab-panel h2 { margin-bottom: 0.2rem; }
+
+.tab-options {
+  border-left: 1px solid #ffffff33;
+  padding-left: 1.2rem;
+}
+
+/* botones: en modo oscuro el negro se perdía contra el fondo */
+@media (prefers-color-scheme: dark) {
+  button { background: var(--text); color: var(--black); border-color: var(--text); }
+  button:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn-cancel { background: var(--panel); color: #8fa0ff; border-color: #8fa0ff; }
+  .btn-cancel:hover { background: #8fa0ff; color: var(--black); }
+}
+
+.btn-secondary {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+.btn-small { padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+
+.button-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.6rem 0 0.4rem; }
+
+/* el botón nativo de "Elegir archivo" con el mismo estilo que el resto */
+input[type="file"] { padding: 0.35rem 0.5rem; cursor: pointer; }
+input[type="file"]::file-selector-button {
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--border);
+  padding: 0.35rem 0.8rem;
+  margin-right: 0.7rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+textarea:focus { outline: none; border-color: var(--green); }
+
+/* dónde se guarda, debajo del título de cada sección */
+.save-line {
+  margin: 0 0 0.9rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.save-line:empty { display: none; }
+.save-line a { color: var(--text); font-weight: 700; }
+.save-line a:hover { color: var(--red); }
+
+/* explicación breve de cada sección (se oculta desde Opciones) */
+.help {
+  border-left: 4px solid var(--red);
+  background: var(--panel);
+  padding: 0.7rem 1rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.help p { margin: 0 0 0.3rem; }
+.help p:last-child { margin-bottom: 0; }
+.help ul { margin: 0; padding-left: 1.1rem; }
+.help li { margin-bottom: 0.2rem; }
+body.hide-help .help { display: none; }
+body.remote .local-only { display: none; }
+
+.folder-path {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.8rem;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  padding: 0.5rem 0.7rem;
+  margin: 0;
+  word-break: break-all;
+}
+
+.about { text-align: center; margin-top: 1.5rem; }
+.about a { color: var(--text); }
+
+/* aviso abajo cuando se guarda algo */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: calc(100vw - 2rem);
+  background: var(--black);
+  color: #fff;
+  border: 2px solid var(--green);
+  padding: 0.6rem 0.6rem 0.6rem 1rem;
+  font-size: 0.82rem;
+  box-shadow: 4px 4px 0 var(--green);
+  z-index: 10;
+}
+.toast[hidden] { display: none; }
+#toast-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.toast .btn-small { background: var(--green); border-color: var(--green); color: var(--black); white-space: nowrap; }
+.toast .btn-small:hover { background: #fff; border-color: #fff; }
+.toast-close {
+  background: none;
+  border: none;
+  color: #ffffffaa;
+  font-size: 1.2rem;
+  padding: 0 0.3rem;
+  line-height: 1;
+}
+.toast-close:hover { background: none; color: #fff; }
+
+/* el logo usaba el color del panel: en modo oscuro quedaba negro sobre negro */
+.topnav-logo { color: #ffffff; }
+
+/* --- Transiciones al cambiar de sección --- */
+/* cada vez que una sección pasa de oculta a visible, la animación arranca
+   de nuevo: entra con un fundido y sus bloques aparecen escalonados */
+.tab-panel.active { animation: panel-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.tab-panel.active > * { animation: block-in 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.tab-panel.active > :nth-child(1) { animation-delay: 0.02s; }
+.tab-panel.active > :nth-child(2) { animation-delay: 0.06s; }
+.tab-panel.active > :nth-child(3) { animation-delay: 0.10s; }
+.tab-panel.active > :nth-child(4) { animation-delay: 0.14s; }
+.tab-panel.active > :nth-child(5) { animation-delay: 0.18s; }
+.tab-panel.active > :nth-child(6) { animation-delay: 0.22s; }
+.tab-panel.active > :nth-child(n+7) { animation-delay: 0.26s; }
+
+@keyframes panel-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes block-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* la rayita roja de la pestaña activa crece desde el centro */
+.tab-btn { position: relative; border-bottom-color: transparent !important; transition: color 0.2s; }
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.tab-btn.active::after { transform: scaleX(1); }
+.tab-btn:hover::after { transform: scaleX(0.4); }
+.tab-btn.active:hover::after { transform: scaleX(1); }
+
+/* botones y tarjetas con un poco de respuesta al pasar el mouse */
+button { transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s; }
+.tool-card { transition: box-shadow 0.2s; }
+.tool-card:hover { box-shadow: 4px 4px 0 var(--border); }
+
+/* el aviso de guardado sube desde abajo */
+.toast:not([hidden]) { animation: toast-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* la ayuda se pliega suave al ocultarla desde Opciones */
+.help { transition: opacity 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel.active,
+  .tab-panel.active > *,
+  .toast:not([hidden]) { animation: none; }
+  .tab-btn::after, button, .tool-card { transition: none; }
+}

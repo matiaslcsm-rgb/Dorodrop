@@ -27,8 +27,13 @@ No hace falta instalar nada.
 
 1. Entrá a [**Releases**](../../releases/latest) y bajá `DoroDrop.zip`.
 2. Descomprimilo donde quieras (por ejemplo en Documentos).
-3. Doble clic en **`Abrir Doro Drop.bat`**. Se abre el navegador con la app.
-4. Para apagarla, cerrá la ventana minimizada "Doro Drop - servidor".
+3. Doble clic en **`Abrir Doro Drop.bat`**. Doro Drop se abre en su propia
+   ventana y deja un ícono en el escritorio para las próximas veces.
+4. Para cerrarlo, cerrá la ventana como cualquier programa.
+
+Todo lo que bajás o convertís queda en **Descargas\Doro Drop**, separado por
+sección (Descargas, PDF, Imágenes…). La carpeta se puede cambiar en
+**Opciones**, y cada sección tiene una explicación breve que se puede ocultar.
 
 Si Windows muestra "Windows protegió su PC", tocá **Más información** →
 **Ejecutar de todas formas**.
@@ -47,12 +52,12 @@ segura:
 - nunca actualiza en medio de una descarga.
 
 Se puede apagar, o forzar una actualización si algo dejó de bajar, en
-**Descargar → Actualizaciones**.
+**Opciones → Actualizaciones**.
 
 ### Cuentas privadas
 
 Los posts públicos se bajan sin iniciar sesión. Para contenido de una cuenta
-privada, en **Descargar → Sesión de redes** se cargan las cookies del
+privada, en **Opciones → Sesión de redes** se cargan las cookies del
 navegador (con la extensión "Get cookies.txt LOCALLY"). Doro Drop guarda solo
 las de redes sociales y descarta el resto; quedan únicamente en tu PC.
 
@@ -75,6 +80,10 @@ Abrí http://localhost:8010. Para que otras PCs de la red lo usen, arrancalo
 con `--host 0.0.0.0` y entran a `http://<IP-de-tu-PC>:8010` (es lo que hace
 `start_doro_drop.bat`).
 
+Para abrirlo como app (ventana propia de Edge, sin consola, y se apaga al
+cerrar la ventana): `venv\Scripts\pythonw.exe launcher.py` desde `backend`
+(con `--lan` también queda accesible desde la red).
+
 ### Armar el .zip portable
 
 ```powershell
@@ -93,14 +102,20 @@ frameworks. Los archivos se procesan en la PC y los temporales se borran
 solos después de 24 horas.
 
 ```
+backend/
+  launcher.py       abre la app: servidor + ventana de Edge, se apaga al cerrar
 backend/app/
   main.py           arma la app y sirve el frontend
   paths.py          carpetas de datos; suma tools/ al PATH en la portable
+  settings.py       ajustes por PC (data/settings.json)
+  delivery.py       entrega cada resultado: a la carpeta elegida o al navegador
+  desktop.py        selector de carpeta, Explorador, acceso directo, Edge
   cleanup.py        borra data/downloads y data/tmp de más de 24 h
   updater.py        auto-actualización segura de yt-dlp y gallery-dl
   routers/
     downloader.py   videos (yt-dlp), fotos (yt-dlp para Instagram,
                     gallery-dl para el resto), cookies
+    options.py      pestaña Opciones
     system.py       versiones y actualización manual
     pdf_tools.py    unir, dividir, imágenes a PDF
     images.py       conversión, RAW a JPG, editor, perfiles

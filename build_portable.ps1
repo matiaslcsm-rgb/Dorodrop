@@ -45,6 +45,7 @@ Write-Host "Copiando la app..."
 New-Item -ItemType Directory -Force (Join-Path $out "backend") | Out-Null
 Copy-Item (Join-Path $root "backend\app") (Join-Path $out "backend\app") -Recurse
 Copy-Item (Join-Path $root "backend\requirements.txt") (Join-Path $out "backend")
+Copy-Item (Join-Path $root "backend\launcher.py") (Join-Path $out "backend")
 Copy-Item (Join-Path $root "frontend") (Join-Path $out "frontend") -Recurse
 Get-ChildItem $out -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
 New-Item -ItemType Directory -Force (Join-Path $out "data\downloads"), (Join-Path $out "data\tmp") | Out-Null

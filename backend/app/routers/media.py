@@ -3,9 +3,9 @@ import subprocess
 import uuid
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from fastapi.responses import FileResponse
 
 from ..paths import TMP_DIR
+from ..delivery import deliver
 
 router = APIRouter(prefix="/api/media", tags=["media"])
 
@@ -47,4 +47,4 @@ async def convert_media(
     finally:
         src_path.unlink(missing_ok=True)
 
-    return FileResponse(out_path, filename=f"convertido.{fmt}")
+    return deliver(out_path, filename=f"convertido.{fmt}")

@@ -20,6 +20,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from importlib.metadata import PackageNotFoundError, version
 
+from . import settings
 from .paths import DATA_DIR
 
 PACKAGES = ("yt-dlp", "gallery-dl")
@@ -27,7 +28,6 @@ MIN_AGE_DAYS = 3
 CHECK_EVERY_SECONDS = 24 * 3600
 FIRST_CHECK_DELAY_SECONDS = 60
 
-SETTINGS_FILE = DATA_DIR / "settings.json"
 STATE_FILE = DATA_DIR / "update_state.json"
 
 # downloader.py registra acá una función que dice si hay descargas en curso
@@ -53,13 +53,11 @@ def _read_json(path, default):
 
 
 def auto_update_enabled() -> bool:
-    return _read_json(SETTINGS_FILE, {}).get("auto_update", True)
+    return settings.load()["auto_update"]
 
 
 def set_auto_update(enabled: bool) -> None:
-    settings = _read_json(SETTINGS_FILE, {})
-    settings["auto_update"] = bool(enabled)
-    SETTINGS_FILE.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+    settings.update(auto_update=bool(enabled))
 
 
 def get_state() -> dict:

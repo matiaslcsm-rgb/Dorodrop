@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from PIL import Image
 
 from ..paths import DATA_DIR, TMP_DIR
+from ..delivery import deliver
 
 router = APIRouter(prefix="/api/image", tags=["image"])
 
@@ -70,7 +71,7 @@ async def convert_image(
     finally:
         src_path.unlink(missing_ok=True)
 
-    return FileResponse(out_path, filename=f"convertida.{fmt}")
+    return deliver(out_path, filename=f"convertida.{fmt}")
 
 
 @router.post("/raw-to-jpg")
@@ -89,13 +90,13 @@ async def raw_to_jpg(files: list[UploadFile] = File(...), quality: int = Form(92
             out_paths.append(out_path)
 
         if len(out_paths) == 1:
-            return FileResponse(out_paths[0], filename=out_paths[0].name.split("_", 1)[1])
+            return deliver(out_paths[0], filename=out_paths[0].name.split("_", 1)[1])
 
         zip_path = TMP_DIR / f"{uuid.uuid4().hex}_raw_a_jpg.zip"
         with zipfile.ZipFile(zip_path, "w") as zf:
             for p in out_paths:
                 zf.write(p, arcname=p.name.split("_", 1)[1])
-        return FileResponse(zip_path, filename="raw_a_jpg.zip", media_type="application/zip")
+        return deliver(zip_path, filename="raw_a_jpg.zip", media_type="application/zip")
     except rawpy.LibRawError as exc:
         raise HTTPException(status_code=400, detail=f"No se pudo leer el archivo RAW: {exc}") from exc
     finally:
@@ -173,7 +174,7 @@ async def edit_image(
     finally:
         src_path.unlink(missing_ok=True)
 
-    return FileResponse(out_path, filename=f"editada.{fmt}")
+    return deliver(out_path, filename=f"editada.{fmt}")
 
 
 @router.post("/edit-batch")
@@ -208,13 +209,13 @@ async def edit_images_batch(
             out_paths.append(out_path)
 
         if len(out_paths) == 1:
-            return FileResponse(out_paths[0], filename=out_paths[0].name.split("_", 1)[1])
+            return deliver(out_paths[0], filename=out_paths[0].name.split("_", 1)[1])
 
         zip_path = TMP_DIR / f"{uuid.uuid4().hex}_editadas.zip"
         with zipfile.ZipFile(zip_path, "w") as zf:
             for p in out_paths:
                 zf.write(p, arcname=p.name.split("_", 1)[1])
-        return FileResponse(zip_path, filename="editadas.zip", media_type="application/zip")
+        return deliver(zip_path, filename="editadas.zip", media_type="application/zip")
     except rawpy.LibRawError as exc:
         raise HTTPException(status_code=400, detail=f"No se pudo leer un archivo RAW: {exc}") from exc
     finally:

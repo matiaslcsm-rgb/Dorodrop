@@ -47,10 +47,86 @@ function celebrateSuccess() {
   flameEl.classList.add("active");
 }
 
+// --- Guardar en la carpeta de Doro Drop ---
+// Cada pedido a una herramienta lleva su sección; si en Opciones está
+// "guardar directo en la carpeta", el servidor guarda el archivo ahí y
+// responde dónde quedó en vez de mandarlo al navegador.
+function sectionForUrl(url) {
+  const path = String(url);
+  if (path.startsWith("/api/download")) return "download";
+  if (path.startsWith("/api/pdf")) return "pdf";
+  if (path.startsWith("/api/image/edit")) return "editor";
+  if (path.startsWith("/api/image/")) return "image";
+  if (path.startsWith("/api/media")) return "media";
+  return null;
+}
+
+const nativeFetch = window.fetch.bind(window);
+window.fetch = (url, opts = {}) => {
+  const section = typeof url === "string" ? sectionForUrl(url) : null;
+  if (!section) return nativeFetch(url, opts);
+  const headers = new Headers(opts.headers || {});
+  headers.set("X-Doro-Save", section);
+  return nativeFetch(url, { ...opts, headers });
+};
+
+let lastSavedPath = null;
+let toastTimer = null;
+
+function showSavedToast(saved) {
+  lastSavedPath = saved.path;
+  document.getElementById("toast-text").textContent = `Guardado: ${saved.filename}`;
+  document.getElementById("toast-text").title = saved.path;
+  const toast = document.getElementById("toast");
+  toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.hidden = true; }, 9000);
+}
+
+async function revealInFolder(path) {
+  try {
+    const res = await fetch("/api/options/reveal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: path || null }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alertStatus(err.detail || "No se pudo abrir la carpeta");
+    }
+  } catch (err) {
+    alertStatus("No se pudo abrir la carpeta");
+  }
+}
+
+function alertStatus(message) {
+  document.getElementById("toast-text").textContent = message;
+  document.getElementById("toast-reveal").hidden = true;
+  document.getElementById("toast").hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    document.getElementById("toast").hidden = true;
+    document.getElementById("toast-reveal").hidden = false;
+  }, 6000);
+}
+
+document.getElementById("toast-reveal").addEventListener("click", () => revealInFolder(lastSavedPath));
+document.getElementById("toast-close").addEventListener("click", () => {
+  document.getElementById("toast").hidden = true;
+});
+
 async function downloadBlobResponse(response, fallbackName) {
   if (!response.ok) {
     const err = await response.json().catch(() => ({ detail: response.statusText }));
     throw new Error(err.detail || "Error desconocido");
+  }
+  if ((response.headers.get("content-type") || "").includes("application/json")) {
+    const saved = await response.json();
+    if (saved.saved) {
+      document.getElementById("toast-reveal").hidden = false;
+      showSavedToast(saved);
+      return saved.filename;
+    }
   }
   const disposition = response.headers.get("content-disposition") || "";
   // los nombres con acentos llegan como filename*=utf-8''... (RFC 5987)
@@ -1164,3 +1240,140 @@ document.getElementById("editor-preset-delete-btn").addEventListener("click", as
 });
 
 loadPresetsList();
+
+// --- Opciones ---
+let options = null;
+
+function shortFolder(path) {
+  // "C:\Users\Ana\Downloads\Doro Drop\PDF" -> "Downloads\Doro Drop\PDF"
+  const parts = path.split(/[\\/]/).filter(Boolean);
+  return parts.length > 3 ? "…\\" + parts.slice(-3).join("\\") : path;
+}
+
+function folderForSection(section) {
+  const base = options.save_dir;
+  const sub = options.subfolders && options.section_folders[section];
+  return sub ? `${base}\\${sub}` : base;
+}
+
+function renderSaveLines() {
+  document.querySelectorAll(".save-line").forEach((el) => {
+    el.innerHTML = "";
+    if (!options) return;
+    if (!options.is_local || !options.save_to_folder) {
+      el.textContent = "Se guarda en las descargas del navegador.";
+      return;
+    }
+    const folder = folderForSection(el.dataset.section);
+    el.append("Se guarda en ");
+    const a = document.createElement("a");
+    a.href = "#";
+    a.textContent = shortFolder(folder);
+    a.title = `${folder}\nTocá para abrir la carpeta`;
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      revealInFolder(folder);
+    });
+    el.append(a, " · ");
+    const change = document.createElement("a");
+    change.href = "#";
+    change.textContent = "cambiar";
+    change.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.querySelector('[data-tab="options"]').click();
+    });
+    el.append(change);
+  });
+}
+
+function renderOptions(data) {
+  options = data;
+  document.body.classList.toggle("hide-help", !data.show_help);
+  document.body.classList.toggle("remote", !data.is_local);
+  document.getElementById("opt-folder").textContent = data.save_dir;
+  document.getElementById("opt-folder-reset").hidden = !data.is_custom_dir;
+  document.getElementById("opt-subfolders").checked = data.subfolders;
+  document.getElementById("opt-save-to-folder").checked = data.save_to_folder;
+  document.getElementById("opt-show-help").checked = data.show_help;
+  renderSaveLines();
+}
+
+async function saveOptions(changes, statusEl) {
+  try {
+    const res = await fetch("/api/options", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(changes),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "No se pudo guardar");
+    renderOptions(data);
+    if (statusEl) setStatus(statusEl, "");
+  } catch (err) {
+    if (statusEl) setStatus(statusEl, err.message, "err");
+    loadOptions();
+  }
+}
+
+async function loadOptions() {
+  try {
+    const res = await fetch("/api/options");
+    renderOptions(await res.json());
+  } catch (err) {
+    // sin servidor no hay nada que mostrar
+  }
+}
+
+const folderStatus = document.getElementById("opt-folder-status");
+
+document.getElementById("opt-folder-open").addEventListener("click", () => revealInFolder(null));
+
+document.getElementById("opt-folder-pick").addEventListener("click", async () => {
+  const btn = document.getElementById("opt-folder-pick");
+  btn.disabled = true;
+  setStatus(folderStatus, "Elegí la carpeta en la ventana que se abrió (puede quedar detrás de esta).");
+  try {
+    const res = await fetch("/api/options/pick-folder", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "No se pudo abrir el selector");
+    renderOptions(data);
+    setStatus(folderStatus, data.changed ? "Listo, de ahora en más se guarda ahí." : "", data.changed ? "ok" : "");
+  } catch (err) {
+    setStatus(folderStatus, err.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("opt-folder-reset").addEventListener("click", () =>
+  saveOptions({ save_dir: "" }, folderStatus)
+);
+document.getElementById("opt-subfolders").addEventListener("change", (e) =>
+  saveOptions({ subfolders: e.target.checked }, folderStatus)
+);
+document.getElementById("opt-save-to-folder").addEventListener("change", (e) =>
+  saveOptions({ save_to_folder: e.target.checked }, folderStatus)
+);
+document.getElementById("opt-show-help").addEventListener("change", (e) =>
+  saveOptions({ show_help: e.target.checked })
+);
+
+document.getElementById("opt-shortcut").addEventListener("click", async () => {
+  const status = document.getElementById("opt-shortcut-status");
+  try {
+    const res = await fetch("/api/options/shortcut", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "No se pudo crear");
+    setStatus(status, "Listo, ya está el ícono de Doro Drop en el escritorio.", "ok");
+  } catch (err) {
+    setStatus(status, err.message, "err");
+  }
+});
+
+loadOptions();
+
+// la ventana avisa que sigue abierta (el lanzador lo usa para apagarse solo
+// si no pudo abrir la ventana de Edge)
+setInterval(() => {
+  nativeFetch("/api/options/ping", { method: "POST" }).catch(() => {});
+}, 15000);

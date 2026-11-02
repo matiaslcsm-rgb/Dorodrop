@@ -11,21 +11,20 @@
 <header class="site-header">
   <nav class="topnav">
     <span class="topnav-logo">Doro Drop</span>
-    <div class="topnav-links">
+    <div class="topnav-links" role="tablist">
       <button class="tab-btn active" data-tab="download">Descargar</button>
       <button class="tab-btn" data-tab="pdf">PDF</button>
       <button class="tab-btn" data-tab="image">Imágenes</button>
+      <button class="tab-btn" data-tab="editor">Editor</button>
       <button class="tab-btn" data-tab="media">Audio/Video</button>
       <button class="tab-btn" data-tab="notes">Notas</button>
-      <button class="tab-btn" data-tab="editor">Editor</button>
+      <button class="tab-btn tab-options" data-tab="options">Opciones</button>
     </div>
   </nav>
   <div class="hero">
-    <div class="hero-title">DORO<br />DROP</div>
-    <p class="subtitle">Utility App</p>
+    <div class="hero-title">DORO DROP</div>
     <p class="hero-desc">
-      Descargá videos, convertí y editá archivos — todo corre acá, en esta
-      máquina, sin subir nada a internet.
+      Descargá y convertí archivos. Todo corre en esta PC, sin subir nada a internet.
     </p>
   </div>
 </header>
@@ -34,9 +33,18 @@
   <!-- Descargar -->
   <section id="download" class="tab-panel active">
     <h2>Descargar</h2>
-    <p class="hint">Videos y fotos de YouTube, Instagram, Facebook, TikTok y más. Pegá un link, o varios (uno por línea) para bajarlos en cola.</p>
+    <p class="save-line" data-section="download"></p>
+    <div class="help">
+      <p>Bajá videos y fotos de YouTube, Instagram, Facebook, TikTok y muchos sitios más.</p>
+      <ul>
+        <li>Copiá el link del video o del post, pegalo abajo y tocá <strong>Buscar</strong>.</li>
+        <li>Elegí la calidad (o <em>Solo audio</em> para un MP3) y confirmá.</li>
+        <li>¿Varios? Pegá un link por línea (Shift+Enter para bajar de línea) y se bajan en cola.</li>
+        <li>Los carruseles de Instagram se bajan completos, en un .zip.</li>
+      </ul>
+    </div>
     <form id="download-search-form">
-      <textarea id="download-url" class="url-box" rows="1" placeholder="https://..." required></textarea>
+      <textarea id="download-url" class="url-box" rows="1" placeholder="Pegá un link: https://..." required></textarea>
       <button type="button" id="download-search-btn">Buscar</button>
     </form>
     <div id="download-search-status" class="status"></div>
@@ -61,7 +69,7 @@
 
     <div class="tool-card preview-card" id="download-preview" hidden>
       <div class="preview-row">
-        <img id="download-thumb" class="preview-thumb" alt="Miniatura del video" hidden />
+        <img id="download-thumb" class="preview-thumb" alt="Miniatura" hidden />
         <div class="preview-info">
           <div id="download-title" class="preview-title"></div>
           <div id="download-meta" class="hint"></div>
@@ -76,7 +84,7 @@
           <option value="360">360p</option>
           <option value="audio">Solo audio (MP3)</option>
         </select>
-        <button type="button" id="download-confirm-btn">Confirmar descarga</button>
+        <button type="button" id="download-confirm-btn">Descargar</button>
         <button type="button" id="download-cancel-btn" class="btn-cancel" hidden>Cancelar</button>
       </form>
       <div class="progress-wrap" id="download-progress-wrap" hidden>
@@ -87,59 +95,23 @@
 
     <div class="tool-card" id="download-history-card" hidden>
       <h3>Historial</h3>
-      <p class="hint">Tocá un link para volver a buscarlo. Se guarda solo en este navegador.</p>
+      <p class="hint">Tocá uno para volver a buscarlo.</p>
       <ul id="download-history" class="history-list"></ul>
-      <button type="button" id="download-history-clear" class="btn-cancel">Borrar historial</button>
+      <button type="button" id="download-history-clear" class="btn-cancel btn-small">Borrar historial</button>
     </div>
-
-    <details class="tool-card settings-card">
-      <summary>Sesión de redes (solo para posts privados)</summary>
-      <p id="cookies-status" class="hint"></p>
-      <p class="hint">
-        No hace falta para posts públicos. Solo si un link te dice que pide
-        iniciar sesión (cuentas privadas, contenido restringido):
-      </p>
-      <ol class="hint steps">
-        <li>En Chrome, instalá la extensión <strong>Get cookies.txt LOCALLY</strong>.</li>
-        <li>Entrá a la red (por ejemplo instagram.com) con tu cuenta iniciada.</li>
-        <li>Abrí la extensión, tocá <strong>Export</strong> y subí acá el archivo.</li>
-      </ol>
-      <p class="hint">Solo se guardan las cookies de redes sociales; el resto se descarta. Quedan en esta PC.</p>
-      <form>
-        <input type="file" id="cookies-file" accept=".txt,text/plain" />
-        <button type="button" id="cookies-upload-btn">Cargar</button>
-        <button type="button" id="cookies-delete-btn" class="btn-cancel">Borrar sesión</button>
-      </form>
-      <div id="cookies-msg" class="status"></div>
-    </details>
-
-    <details class="tool-card settings-card">
-      <summary>Actualizaciones</summary>
-      <p class="hint">
-        Las redes cambian seguido, así que Doro Drop actualiza solo sus
-        descargadores una vez por día. Solo instala versiones oficiales
-        publicadas hace al menos <span id="updater-min-age">3</span> días,
-        las prueba, y si alguna falla vuelve a la anterior.
-      </p>
-      <label class="toggle-row">
-        <input type="checkbox" id="updater-auto" checked /> Actualizar automáticamente
-      </label>
-      <p id="updater-versions" class="hint"></p>
-      <p id="updater-last" class="hint"></p>
-      <p class="hint">
-        Si algo dejó de bajar y no querés esperar, actualizá a la última
-        versión ahora:
-      </p>
-      <form>
-        <button type="button" id="updater-btn">Actualizar ahora</button>
-      </form>
-      <div id="updater-status" class="status"></div>
-    </details>
   </section>
 
   <!-- PDF -->
   <section id="pdf" class="tab-panel">
-    <h2>Herramientas PDF</h2>
+    <h2>PDF</h2>
+    <p class="save-line" data-section="pdf"></p>
+    <div class="help">
+      <ul>
+        <li><strong>Unir:</strong> elegí varios PDF y se juntan en uno, en el orden en que los elegiste.</li>
+        <li><strong>Separar:</strong> cada página de un PDF queda como un archivo aparte (en un .zip).</li>
+        <li><strong>Imágenes a PDF:</strong> fotos o capturas, una por página, en un solo PDF.</li>
+      </ul>
+    </div>
 
     <div class="tool-card">
       <h3>Unir PDFs</h3>
@@ -150,10 +122,10 @@
     </div>
 
     <div class="tool-card">
-      <h3>Dividir PDF en páginas</h3>
+      <h3>Separar páginas</h3>
       <form id="pdf-split-form">
         <input type="file" id="pdf-split-file" accept="application/pdf" required />
-        <button type="submit">Dividir</button>
+        <button type="submit">Separar</button>
       </form>
     </div>
 
@@ -170,7 +142,14 @@
 
   <!-- Imágenes -->
   <section id="image" class="tab-panel">
-    <h2>Conversor de imágenes</h2>
+    <h2>Imágenes</h2>
+    <p class="save-line" data-section="image"></p>
+    <div class="help">
+      <ul>
+        <li><strong>Convertir formato:</strong> pasá una imagen a PNG, JPG, WEBP y otros. Si ponés un ancho máximo, también la achica (sin deformarla).</li>
+        <li><strong>RAW a JPG:</strong> fotos de cámara (Canon, Nikon, Sony, Fuji…) a JPG, varias a la vez. Para retocarlas antes, usá el <em>Editor</em>.</li>
+      </ul>
+    </div>
 
     <div class="tool-card">
       <h3>Convertir formato</h3>
@@ -184,14 +163,14 @@
           <option value="gif">GIF</option>
           <option value="tiff">TIFF</option>
         </select>
-        <input type="number" id="image-maxwidth" placeholder="Ancho máx. (opcional)" min="1" />
+        <input type="number" id="image-maxwidth" placeholder="Ancho máx. (px)" title="Opcional: achica la imagen a este ancho" min="1" />
         <button type="submit">Convertir</button>
       </form>
     </div>
 
     <div class="tool-card">
       <h3>RAW a JPG</h3>
-      <p class="hint">CR2, CR3, NEF, ARW, DNG, RW2, ORF, RAF, PEF, SRW. Podés subir varias a la vez.</p>
+      <p class="hint">CR2, CR3, NEF, ARW, DNG, RW2, ORF, RAF, PEF, SRW.</p>
       <form id="raw2jpg-form">
         <input type="file" id="raw2jpg-files" accept=".cr2,.cr3,.nef,.arw,.dng,.rw2,.orf,.raf,.pef,.srw" multiple required />
         <button type="submit">Convertir</button>
@@ -201,54 +180,17 @@
     <div id="image-status" class="status"></div>
   </section>
 
-  <!-- Audio / Video -->
-  <section id="media" class="tab-panel">
-    <h2>Conversor de audio / video</h2>
-    <p class="hint">Requiere <code>ffmpeg</code> instalado en el servidor.</p>
-    <form id="media-form">
-      <input type="file" id="media-file" required />
-      <select id="media-format">
-        <optgroup label="Video">
-          <option value="mp4">MP4</option>
-          <option value="webm">WEBM</option>
-          <option value="mkv">MKV</option>
-          <option value="avi">AVI</option>
-          <option value="mov">MOV</option>
-        </optgroup>
-        <optgroup label="Audio">
-          <option value="mp3">MP3</option>
-          <option value="wav">WAV</option>
-          <option value="ogg">OGG</option>
-          <option value="aac">AAC</option>
-          <option value="flac">FLAC</option>
-        </optgroup>
-      </select>
-      <button type="submit">Convertir</button>
-    </form>
-    <div id="media-status" class="status"></div>
-  </section>
-
-  <!-- Notas -->
-  <section id="notes" class="tab-panel">
-    <h2>Notas y feedback</h2>
-    <p class="hint">Dejá comentarios, ideas o problemas para el equipo. Se guardan localmente en este servidor.</p>
-
-    <div class="tool-card">
-      <form id="note-form">
-        <input type="text" id="note-author" placeholder="Tu nombre (opcional)" maxlength="60" />
-        <textarea id="note-text" placeholder="Escribí tu comentario..." maxlength="2000" required></textarea>
-        <button type="submit">Publicar</button>
-      </form>
-      <div id="note-status" class="status"></div>
-    </div>
-
-    <div id="notes-list"></div>
-  </section>
-
   <!-- Editor -->
   <section id="editor" class="tab-panel">
     <h2>Editor</h2>
-    <p class="hint">Exposición, contraste, saturación y balance de blancos. Funciona con JPG/PNG y con RAW de cámara. Subí varias fotos para editarlas en lote.</p>
+    <p class="save-line" data-section="editor"></p>
+    <div class="help">
+      <ul>
+        <li>Abrí una o varias fotos (JPG, PNG o RAW de cámara) y ajustá luz y color con las barras. La vista previa se actualiza sola.</li>
+        <li>Con varias fotos, tocá una arriba para verla. Los ajustes se aplican a todas o solo a las que tildes.</li>
+        <li><strong>Guardar como perfil</strong> recuerda los ajustes para usarlos otro día.</li>
+      </ul>
+    </div>
 
     <div class="tool-card">
       <input type="file" id="editor-file" accept="image/*,.cr2,.cr3,.nef,.arw,.dng,.rw2,.orf,.raf,.pef,.srw" multiple />
@@ -301,12 +243,149 @@
             <input type="radio" name="editor-apply-scope" value="selected" /> Solo seleccionadas
           </label>
           <button type="button" id="editor-reset-btn" class="btn-cancel">Reiniciar</button>
-          <button type="button" id="editor-download-btn">Aplicar y descargar</button>
+          <button type="button" id="editor-download-btn">Aplicar y guardar</button>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Audio / Video -->
+  <section id="media" class="tab-panel">
+    <h2>Audio / Video</h2>
+    <p class="save-line" data-section="media"></p>
+    <div class="help">
+      <p>Cambiá el formato de un video o un audio. Por ejemplo: un .mov del celular a .mp4, o sacarle el audio a un video eligiendo MP3. Los archivos largos pueden tardar unos minutos.</p>
+    </div>
+    <div class="tool-card">
+      <form id="media-form">
+        <input type="file" id="media-file" accept="video/*,audio/*" required />
+        <select id="media-format">
+          <optgroup label="Video">
+            <option value="mp4">MP4</option>
+            <option value="webm">WEBM</option>
+            <option value="mkv">MKV</option>
+            <option value="avi">AVI</option>
+            <option value="mov">MOV</option>
+          </optgroup>
+          <optgroup label="Audio">
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+            <option value="aac">AAC</option>
+            <option value="flac">FLAC</option>
+          </optgroup>
+        </select>
+        <button type="submit">Convertir</button>
+      </form>
+    </div>
+    <div id="media-status" class="status"></div>
+  </section>
+
+  <!-- Notas -->
+  <section id="notes" class="tab-panel">
+    <h2>Notas</h2>
+    <div class="help">
+      <p>Un tablón para dejar ideas, pedidos o problemas. Quedan guardadas en esta PC; si Doro Drop se usa por la red, todos ven las mismas notas.</p>
+    </div>
+
+    <div class="tool-card">
+      <form id="note-form">
+        <input type="text" id="note-author" placeholder="Tu nombre (opcional)" maxlength="60" />
+        <textarea id="note-text" placeholder="Escribí tu comentario..." maxlength="2000" required></textarea>
+        <button type="submit">Publicar</button>
+      </form>
+      <div id="note-status" class="status"></div>
+    </div>
+
+    <div id="notes-list"></div>
+  </section>
+
+  <!-- Opciones -->
+  <section id="options" class="tab-panel">
+    <h2>Opciones</h2>
+
+    <div class="tool-card local-only">
+      <h3>Dónde se guarda</h3>
+      <p class="folder-path" id="opt-folder"></p>
+      <div class="button-row">
+        <button type="button" id="opt-folder-open">Abrir carpeta</button>
+        <button type="button" id="opt-folder-pick" class="btn-secondary">Cambiar carpeta…</button>
+        <button type="button" id="opt-folder-reset" class="btn-cancel" hidden>Volver a la de siempre</button>
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" id="opt-subfolders" /> Separar en subcarpetas (Descargas, PDF, Imágenes…)
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="opt-save-to-folder" /> Guardar directo en esta carpeta
+      </label>
+      <p class="hint">Si lo destildás, cada archivo se descarga con el navegador, como cualquier descarga.</p>
+      <div id="opt-folder-status" class="status"></div>
+    </div>
+
+    <div class="tool-card">
+      <h3>Interfaz</h3>
+      <label class="toggle-row">
+        <input type="checkbox" id="opt-show-help" /> Mostrar la explicación arriba de cada sección
+      </label>
+    </div>
+
+    <div class="tool-card local-only">
+      <h3>Acceso directo</h3>
+      <p class="hint">Un ícono de Doro Drop en el escritorio, para abrirlo con doble clic.</p>
+      <button type="button" id="opt-shortcut">Crear acceso directo en el escritorio</button>
+      <div id="opt-shortcut-status" class="status"></div>
+    </div>
+
+    <div class="tool-card">
+      <h3>Actualizaciones</h3>
+      <p class="hint">
+        Las redes cambian seguido, así que Doro Drop actualiza solo sus
+        descargadores una vez por día. Solo instala versiones oficiales
+        publicadas hace al menos <span id="updater-min-age">3</span> días,
+        las prueba, y si alguna falla vuelve a la anterior.
+      </p>
+      <label class="toggle-row">
+        <input type="checkbox" id="updater-auto" checked /> Actualizar automáticamente
+      </label>
+      <p id="updater-versions" class="hint"></p>
+      <p id="updater-last" class="hint"></p>
+      <p class="hint">Si algo dejó de bajar y no querés esperar:</p>
+      <button type="button" id="updater-btn" class="btn-secondary">Actualizar ahora</button>
+      <div id="updater-status" class="status"></div>
+    </div>
+
+    <div class="tool-card">
+      <h3>Sesión de redes</h3>
+      <p id="cookies-status" class="hint"></p>
+      <p class="hint">
+        No hace falta para posts públicos. Solo si un link te dice que pide
+        iniciar sesión (cuentas privadas, contenido restringido):
+      </p>
+      <ol class="hint steps">
+        <li>En Chrome, instalá la extensión <strong>Get cookies.txt LOCALLY</strong>.</li>
+        <li>Entrá a la red (por ejemplo instagram.com) con tu cuenta iniciada.</li>
+        <li>Abrí la extensión, tocá <strong>Export</strong> y subí acá el archivo.</li>
+      </ol>
+      <p class="hint">Solo se guardan las cookies de redes sociales; el resto se descarta. Quedan en esta PC.</p>
+      <form>
+        <input type="file" id="cookies-file" accept=".txt,text/plain" />
+        <button type="button" id="cookies-upload-btn">Cargar</button>
+        <button type="button" id="cookies-delete-btn" class="btn-cancel">Borrar sesión</button>
+      </form>
+      <div id="cookies-msg" class="status"></div>
+    </div>
+
+    <p class="hint about">
+      Doro Drop · <a href="https://github.com/matiaslcsm-rgb/Dorodrop" target="_blank" rel="noopener">código en GitHub</a>
+    </p>
+  </section>
 </main>
+
+<div id="toast" class="toast" role="status" hidden>
+  <span id="toast-text"></span>
+  <button type="button" id="toast-reveal" class="btn-small">Mostrar en carpeta</button>
+  <button type="button" id="toast-close" class="toast-close" aria-label="Cerrar">×</button>
+</div>
 
 <script src="app.js"></script>
 </body>

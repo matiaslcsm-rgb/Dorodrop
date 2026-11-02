@@ -5,9 +5,10 @@ from fastapi.staticfiles import StaticFiles
 
 from . import updater
 from .cleanup import start_cleanup_thread
-from .routers import downloader, pdf_tools, images, media, notes, system
+from .delivery import remember_request
+from .routers import downloader, pdf_tools, images, media, notes, options, system
 
-app = FastAPI(title="Multiherramienta Local")
+app = FastAPI(title="Doro Drop")
 
 app.include_router(downloader.router)
 app.include_router(pdf_tools.router)
@@ -15,6 +16,9 @@ app.include_router(images.router)
 app.include_router(media.router)
 app.include_router(notes.router)
 app.include_router(system.router)
+app.include_router(options.router)
+
+app.middleware("http")(remember_request)
 
 
 @app.on_event("startup")

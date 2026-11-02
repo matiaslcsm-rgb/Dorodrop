@@ -12,11 +12,11 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import yt_dlp
 
 from ..paths import DATA_DIR, DOWNLOADS_DIR
+from ..delivery import deliver
 
 # Instagram (y algunos posts privados de Facebook) no muestran fotos sin
 # sesión iniciada. Si existe este archivo (formato Netscape, exportado del
@@ -633,7 +633,7 @@ def get_file(job_id: str):
     job = _jobs.get(job_id)
     if not job or not job.get("path") or not job["path"].exists():
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
-    return FileResponse(job["path"], filename=job.get("download_name", job["path"].name))
+    return deliver(job["path"], filename=job.get("download_name", job["path"].name))
 
 
 # --- cookies (sesión de redes) ---

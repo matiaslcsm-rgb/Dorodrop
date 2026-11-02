@@ -3,10 +3,10 @@ from pathlib import Path
 
 import img2pdf
 from fastapi import APIRouter, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse
 from pypdf import PdfReader, PdfWriter
 
 from ..paths import TMP_DIR
+from ..delivery import deliver
 
 router = APIRouter(prefix="/api/pdf", tags=["pdf"])
 
@@ -40,7 +40,7 @@ async def merge_pdfs(files: list[UploadFile] = File(...)):
         for p in saved_paths:
             p.unlink(missing_ok=True)
 
-    return FileResponse(out_path, filename="unido.pdf", media_type="application/pdf")
+    return deliver(out_path, filename="unido.pdf", media_type="application/pdf")
 
 
 @router.post("/split")
@@ -68,7 +68,7 @@ async def split_pdf(file: UploadFile = File(...)):
     finally:
         path.unlink(missing_ok=True)
 
-    return FileResponse(zip_path, filename="paginas.zip", media_type="application/zip")
+    return deliver(zip_path, filename="paginas.zip", media_type="application/zip")
 
 
 @router.post("/images-to-pdf")
@@ -85,4 +85,4 @@ async def images_to_pdf(files: list[UploadFile] = File(...)):
         for p in saved_paths:
             p.unlink(missing_ok=True)
 
-    return FileResponse(out_path, filename="imagenes.pdf", media_type="application/pdf")
+    return deliver(out_path, filename="imagenes.pdf", media_type="application/pdf")

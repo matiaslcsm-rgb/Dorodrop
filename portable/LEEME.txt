@@ -12,25 +12,35 @@ CÓMO SE USA
    Documentos). No la abras desde adentro del .zip: tiene que estar
    descomprimida.
 2. Doble clic en "Abrir Doro Drop.bat".
-   Se abre el navegador con la app. Puede tardar unos segundos la
-   primera vez.
-3. Para apagarla, cerrá la ventana minimizada que dice
-   "Doro Drop - servidor" en la barra de tareas.
+   Doro Drop se abre en su propia ventana. La primera vez también deja
+   un ícono "Doro Drop" en el escritorio: de ahí en más, abrilo desde
+   ese ícono.
+3. Para cerrarlo, cerrá la ventana como cualquier programa. Si había
+   una descarga en curso, termina antes de apagarse.
 
 No hace falta instalar nada: Python, ffmpeg y todo lo demás ya vienen
-adentro de la carpeta.
+adentro de la carpeta. No muevas ni borres la carpeta "DoroDrop"
+después de crear el ícono (si la movés, creá el ícono de nuevo desde
+Opciones).
 
 Si Windows muestra "Windows protegió su PC", tocá "Más información" y
 después "Ejecutar de todas formas".
+
+
+DÓNDE QUEDAN LOS ARCHIVOS
+-------------------------
+Todo lo que descargás o convertís se guarda en
+Descargas\Doro Drop, separado en subcarpetas (Descargas, PDF,
+Imágenes...). Cada vez que se guarda algo aparece un aviso con el botón
+"Mostrar en carpeta". Se puede cambiar la carpeta en Opciones.
 
 
 INSTAGRAM
 ---------
 Los posts públicos (fotos, carruseles, reels) se bajan sin iniciar
 sesión. Si Instagram rechaza un link, esperá unos minutos y probá de
-nuevo. Solo para cuentas privadas: en la sección Descargar, abajo de
-todo, abrí "Sesión de redes" y seguí los pasos. Tu sesión queda
-guardada solo en esta PC (carpeta data).
+nuevo. Solo para cuentas privadas: en Opciones > "Sesión de redes"
+seguí los pasos. Tu sesión queda guardada solo en esta PC.
 
 
 ACTUALIZACIONES
@@ -38,10 +48,10 @@ ACTUALIZACIONES
 Doro Drop actualiza solo sus descargadores una vez por día (las redes
 cambian seguido). Solo instala versiones oficiales con al menos 3 días
 de publicadas, las prueba, y si alguna falla vuelve a la anterior.
-Se puede apagar en "Actualizaciones", abajo de todo en Descargar.
+Se puede apagar en Opciones > "Actualizaciones".
 
-Si algo dejó de bajar y no querés esperar: "Actualizaciones" >
-"Actualizar ahora".
+Si algo dejó de bajar y no querés esperar: Opciones >
+"Actualizaciones" > "Actualizar ahora".
 
 
 Usalo para contenido propio o con permiso: descargar contenido ajeno
