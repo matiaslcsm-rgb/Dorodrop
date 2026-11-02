@@ -40,6 +40,15 @@ $site = Join-Path $out "python\Lib\site-packages"
 if ($LASTEXITCODE -ne 0) { throw "pip falló" }
 Remove-Item (Join-Path $site "bin") -Recurse -Force -ErrorAction SilentlyContinue
 
+# runtime de Visual C++: Python embebible trae vcruntime140, pero rawpy
+# también necesita msvcp140, que una PC recién instalada puede no tener.
+# Van junto a python.exe (despliegue local, permitido por Microsoft).
+foreach ($dll in "msvcp140.dll", "msvcp140_1.dll", "msvcp140_2.dll", "concrt140.dll") {
+    $src = Join-Path $env:SystemRoot "System32\$dll"
+    if (Test-Path $src) { Copy-Item $src (Join-Path $out "python") }
+    elseif ($dll -eq "msvcp140.dll") { throw "Falta $dll en esta PC (instalá el Visual C++ Redistributable x64)" }
+}
+
 # 3. Código de la app
 Write-Host "Copiando la app..."
 New-Item -ItemType Directory -Force (Join-Path $out "backend") | Out-Null

@@ -4,7 +4,22 @@ import zipfile
 from pathlib import Path
 
 import numpy as np
-import rawpy
+try:
+    import rawpy
+except (ImportError, OSError) as _raw_exc:
+    # rawpy necesita el runtime de Visual C++; si falta, que falle solo lo
+    # de RAW y no toda la app
+    class rawpy:  # noqa: N801
+        class LibRawError(Exception):
+            pass
+
+        @staticmethod
+        def imread(*_args, **_kwargs):
+            raise rawpy.LibRawError(
+                "Las fotos RAW no funcionan en esta PC (falta el runtime de Visual C++)"
+            )
+
+    print(f"rawpy no disponible: {_raw_exc}")
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
